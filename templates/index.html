@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+</head>
+<script>
+    particlesJS.load('particles-js', "{{ url_for('static', filename='particlesjs-config.json') }}", function() {
+        console.log("Particles.js background loaded.");
+    });
+</script>
+
+<body>
+    <div id="particles-js"></div>
+    <button id="toggle-dark-mode">🌙 Dark Mode</button>
+    
+    <div class="container">
+        <h1>To-Do List</h1>
+        <form action="{{ url_for('add_task') }}" method="POST">
+            {{ form.hidden_tag() }}  <!-- This adds the CSRF token -->
+        
+            <label for="title">Task:</label>
+            <input type="text" name="title" required>
+        
+            <label for="due_date">Due Date:</label>
+            <input type="date" name="due_date">
+        
+            <label for="priority">Priority:</label>
+            <select name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+        
+            <button type="submit">Add Task</button>
+        </form>
+        
+        <form method="GET" action="{{ url_for('index') }}">
+            <label for="sort_by">Sort by:</label>
+            <select name="sort_by" id="sort_by" onchange="this.form.submit()">
+                <option value="default" {% if sort_by == "default" %}selected{% endif %}>Default</option>
+                <option value="priority" {% if sort_by == "priority" %}selected{% endif %}>Priority</option>
+                <option value="due_date" {% if sort_by == "due_date" %}selected{% endif %}>Due Date</option>
+                <option value="completed" {% if sort_by == "completed" %}selected{% endif %}>Completed</option>
+            </select>
+        </form>
+    
+
+        <ul>
+        <div id="task-list">
+            {% for task in tasks %}
+                <div class="task-item">
+                    <input type="checkbox" class="toggle-task" data-id="{{ task.id }}" {% if task.completed %}checked{% endif %}>
+                    <span>{{ task.title }}</span>
+                    <span>📅 Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'No Due Date' }}</span>
+                    <span>🔥 Priority: {{ task.priority }}</span>
+                
+                    <!-- DELETE BUTTON -->
+                    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Are you sure?');" class="delete-btn">❌ Delete</button>
+                    </form>
+                </div>
+            {% endfor %}
+
+
+
+        </div>
+
+        <div class="buttons">
+            <a href="{{ url_for('analytics_page') }}" class="button button-analytics">📊 View Task Analytics</a>
+        
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="button button-logout">🚪 Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="button button-analytics">🔑 Login</a>
+                <a href="{{ url_for('register') }}" class="button button-analytics">📝 Register</a>
+            {% endif %}
+        </div>
+        <!--  
+        <div class="chat-container">
+            <h2>🤖 Task Assistant</h2>
+            <p>Type a command (e.g., "Add task: Finish project (High) Due: 2024-06-30")</p>
+            <input type="text" id="userInput" placeholder="Enter command...">
+            <button onclick="sendCommand()">Send</button>
+            <div id="chat-response"></div>
+        </div>
+    </div>
+
+    <script>
+        function sendCommand() {
+            const userInput = document.getElementById("userInput").value;
+            fetch('/process_command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.tasks) {
+                    document.getElementById("chat-response").innerHTML = "<h3>📋 Task List:</h3>" + 
+                        data.tasks.map(task => `<p>🔹 ${task.name} (Priority: ${task.priority}, Due: ${task.due_date})</p>`).join("");
+                } else {
+                    document.getElementById("chat-response").innerHTML = `<p>${data.message}</p>`;
+                }
+            });
+        }
+    </script>-->
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $(".toggle-task").click(function () {
+                    let taskId = $(this).data("id");
+                
+                    $.ajax({
+                        url: "/toggle_task/" + taskId,
+                        type: "POST",
+                        success: function (response) {
+                            if (response.status === "success") {
+                                location.reload(); // Refresh only the task list
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            var taskList = document.getElementById("task-list");
+            new Sortable(taskList, {
+                animation: 150,
+                ghostClass: "sortable-ghost",
+                onEnd: function (evt) {
+                    let taskOrder = [];
+                    $(".task-item").each(function () {
+                        taskOrder.push($(this).data("id"));
+                    });
+        
+                    $.ajax({
+                        url: "/reorder_tasks",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ order: taskOrder }),
+                        success: function (response) {
+                            console.log(response.message);
+                        }
+                    });
+                }
+            });
+        </script>   
+        </ul>
+    </div>
+    <script src="{{ url_for('static', filename='darkmode.js') }}"></script>
+</body>
+</html>

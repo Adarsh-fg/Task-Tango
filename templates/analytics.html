@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #d3d3d3, #a9a9a9); /* Neutral gray gradient */
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-color); /* #333333 from CSS */
+        }
+
+        .container {
+            background: var(--glass-bg); /* rgba(245, 245, 245, 0.1) */
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px var(--shadow-color); /* rgba(0, 0, 0, 0.3) */
+            width: 80%;
+            max-width: 900px;
+            margin: auto;
+            border: 1px solid var(--border-color); /* rgba(200, 200, 200, 0.3) */
+        }
+        
+        h1 {
+            color: var(--text-color); /* #333333 */
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chart-box {
+            background: var(--glass-bg); /* rgba(245, 245, 245, 0.1) */
+            border: 1px solid var(--border-color); /* rgba(200, 200, 200, 0.3) */
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px var(--shadow-color); /* rgba(0, 0, 0, 0.3) */
+        }
+
+        .button {
+            background: rgba(120, 120, 120, 0.8); /* Neutral gray button */
+            color: white;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background: rgba(120, 120, 120, 1);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <button id="toggle-dark-mode">🌙 Dark Mode</button>
+
+    <div class="container">
+        <h1>Task Analytics</h1>
+        <div class="chart-container">
+            <div class="chart-box">
+                <canvas id="taskChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+        <a href="{{ url_for('index') }}" class="button">🏠 Go to Home</a>
+    </div>
+    
+    <script>
+        particlesJS.load('particles-js', "{{ url_for('static', filename='particlesjs-config.json') }}", function() {
+            console.log("Particles.js background loaded.");
+        });
+
+        fetch("/analytics")
+        .then(response => response.json())
+        .then(data => {
+            const ctx1 = document.getElementById('taskChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Pending'],
+                    datasets: [{
+                        data: [data.completed_tasks, data.pending_tasks],
+                        backgroundColor: ['#8A9A8D', '#D9A566'] /* Neutral green and beige */
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#333333' /* Dark gray for light mode */
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('priorityChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Low', 'Medium', 'High'],
+                    datasets: [{
+                        data: [data.priority_counts.Low, data.priority_counts.Medium, data.priority_counts.High],
+                        backgroundColor: ['#A9A9A9', '#808080', '#595959'] /* Shades of gray */
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#333333' /* Dark gray for light mode */
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#333333' /* Dark gray for light mode */
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#333333' /* Dark gray for light mode */
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='darkmode.js') }}"></script>
+    <script>
+        // Adjust chart text colors for dark mode
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const charts = [Chart.getChart('taskChart'), Chart.getChart('priorityChart')];
+            charts.forEach(chart => {
+                if (chart) {
+                    chart.options.plugins.legend.labels.color = document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333333';
+                    if (chart.options.scales) {
+                        chart.options.scales.x.ticks.color = document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333333';
+                        chart.options.scales.y.ticks.color = document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333333';
+                    }
+                    chart.update();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

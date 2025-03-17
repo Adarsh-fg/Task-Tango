@@ -1,0 +1,210 @@
+/* ----- Global Styling ----- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --primary-bg: rgba(50, 50, 50, 0.6); /* Darker gray with transparency */
+    --glass-bg: rgba(245, 245, 245, 0.1); /* Light off-white with transparency */
+    --border-color: rgba(200, 200, 200, 0.3); /* Light gray border */
+    --shadow-color: rgba(0, 0, 0, 0.3); /* Softer black shadow */
+    --text-color: #333333; /* Dark gray text */
+    --hover-color: rgba(150, 150, 150, 0.2); /* Medium gray hover */
+}
+
+body {
+    font-family: 'Poppins', sans-serif !important;
+    background: linear-gradient(to right, #d3d3d3, #a9a9a9); /* Neutral gray gradient */
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    transition: background 0.5s ease-in-out;
+}
+
+h1, button, input, select, label, .task-item {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* ----- Glassmorphism Effect ----- */
+.container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    width: 70%;
+    max-width: 900px;
+    min-width: 350px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+/* ----- Task List Styling ----- */
+#task-list {
+    margin-top: 15px;
+}
+
+.task-item {
+    background: var(--glass-bg);
+    backdrop-filter: blur(5px);
+    width: 93%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: transform 0.2s ease-in-out;
+}
+
+.task-item:hover {
+    transform: scale(1.05);
+}
+
+/* ----- Inputs & Buttons ----- */
+input, select, button {
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+button {
+    background: rgba(120, 120, 120, 0.6); /* Neutral gray button */
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+button:hover {
+    background: rgba(120, 120, 120, 1);
+    transform: scale(1.1);
+}
+
+/* ----- Dark Mode Toggle Button ----- */
+#toggle-dark-mode {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--glass-bg);
+    padding: 8px 12px;
+    font-size: 18px;
+    border-radius: 50px;
+}
+
+/* ----- Dark Mode ----- */
+.dark-mode {
+    --primary-bg: rgba(40, 40, 40, 0.9); /* Darker neutral gray */
+    --glass-bg: rgba(80, 80, 80, 0.9); /* Medium gray glass */
+    --border-color: rgba(150, 150, 150, 0.6); /* Medium gray border */
+    --shadow-color: rgba(0, 0, 0, 0.5); /* Slightly stronger shadow */
+    --text-color: #e0e0e0; /* Light gray text */
+}
+
+.dark-mode .container {
+    box-shadow: 0 0 15px rgba(100, 100, 100, 0.6); /* Subtle gray glow */
+}
+
+.dark-mode button {
+    background: rgba(100, 100, 100, 0.8); /* Darker gray button */
+    box-shadow: 0 0 10px rgba(100, 100, 100, 0.8);
+}
+
+.dark-mode button:hover {
+    background: rgba(100, 100, 100, 1);
+    box-shadow: 0 0 15px rgba(100, 100, 100, 1);
+}
+
+#toggle-dark-mode {
+    transition: transform 0.2s ease-in-out;
+}
+
+#toggle-dark-mode:hover {
+    transform: scale(1.1);
+}
+
+/* ----- General Button Styling ----- */
+.button {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    border: none;
+}
+
+/* ----- Logout Button (Red) ----- */
+.button-logout {
+    background: rgba(180, 80, 80, 0.8); /* Muted red */
+    color: white;
+    box-shadow: 0 2px 8px rgba(180, 80, 80, 0.5);
+}
+
+.button-logout:hover {
+    background: rgba(180, 80, 80, 1);
+    transform: scale(1.1);
+}
+
+/* ----- Analytics Button (Blue) ----- */
+.button-analytics {
+    background: rgba(80, 120, 160, 0.8); /* Muted blue */
+    color: white;
+    box-shadow: 0 2px 8px rgba(80, 120, 160, 0.5);
+}
+
+.button-analytics:hover {
+    background: rgba(80, 120, 160, 1);
+    transform: scale(1.1);
+}
+
+/* ----- Button Container Centering ----- */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.delete-btn {
+    background-color: rgba(150, 50, 50, 1); /* Muted red for delete */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    border-radius: 5px;
+}
+
+.delete-btn:hover {
+    background-color: rgba(120, 40, 40, 1); /* Darker muted red */
+}
+
+/* Smooth transition for dark mode */
+body {
+    transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+
+/* Task items and container should also transition */
+.task-item, .container {
+    transition: background 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+}
+
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    top: 0;
+    left: 0;
+}
