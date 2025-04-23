@@ -121,9 +121,8 @@ Flask-Migrate==4.0.5
 ## 📬 Contact
 
 For questions or collaboration:
-- GitHub: [your-username](https://github.com/your-username)
-- Email: your.email@example.com
-
+- GitHub: [Adarsh-fg](https://github.com/Adarsh-fg)
+- Email: adarshai5770@gmail.com
 ---
 
 **Happy tasking! 📝✨**
